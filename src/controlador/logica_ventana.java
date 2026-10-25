@@ -2,7 +2,10 @@ package controlador;
 
 import java.awt.event.*;
 import javax.swing.JOptionPane;
+import javax.swing.RowFilter;
 import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 import modelo.personaDAO;
 import vista.ventana;
 
@@ -66,6 +69,18 @@ public class logica_ventana {
                 vista.modeloTabla.removeRow(filaModelo);
             } else {
                 JOptionPane.showMessageDialog(vista, "Seleccione un contacto de la tabla para eliminar.");
+            }
+        });
+        vista.txt_buscar.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                String textoBusqueda = vista.txt_buscar.getText();
+                TableRowSorter<DefaultTableModel> sorter = (TableRowSorter<DefaultTableModel>) vista.tablaContactos.getRowSorter();
+                if (textoBusqueda.trim().length() == 0) {
+                    sorter.setRowFilter(null);
+                } else {
+                    sorter.setRowFilter(RowFilter.regexFilter("(?i)" + textoBusqueda));
+                }
             }
         });
     }
