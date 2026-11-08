@@ -20,7 +20,19 @@ public class logica_ventana {
     }
 
     private void iniciarFunciones() {
-        // funcion para mostrar el menu al hacer clic derecho
+        // Función para cambiar idioma
+        vista.cmb_idioma.addActionListener(e -> {
+            int sel = vista.cmb_idioma.getSelectedIndex();
+            if (sel == 0) {
+                vista.cargarIdioma("es", "ES");
+            } else if (sel == 1) {
+                vista.cargarIdioma("en", "US");
+            } else if (sel == 2) {
+                vista.cargarIdioma("fr", "FR");
+            }
+            vista.actualizarTextosInterfaz();
+        });
+
         vista.tablaContactos.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -30,7 +42,6 @@ public class logica_ventana {
             }
         });
 
-        // funcion para exportar usando el teclado
         vista.tablaContactos.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -40,42 +51,40 @@ public class logica_ventana {
             }
         });
 
-        // funcion para la opcion de exportar del menu
-        vista.itemExportar.addActionListener(e -> {
-            ejecutarExportacion();
-        });
+        vista.itemExportar.addActionListener(e -> ejecutarExportacion());
 
-        // funcion para el boton agregar
         vista.btn_add.addActionListener(e -> {
             String nombre = vista.txt_nombres.getText();
             String telefono = vista.txt_telefono.getText();
             String email = vista.txt_email.getText();
-            String favorito = vista.chb_favorito.isSelected() ? "Sí" : "No";
+            String favorito = vista.chb_favorito.isSelected() ? vista.bundle.getString("val.si")
+                    : vista.bundle.getString("val.no");
             String categoria = vista.cmb_categoria.getSelectedItem().toString();
 
             if (!nombre.isEmpty() && !telefono.isEmpty()) {
-                vista.modeloTabla.addRow(new Object[]{nombre, telefono, email, favorito, categoria});
+                vista.modeloTabla.addRow(new Object[] { nombre, telefono, email, favorito, categoria });
                 limpiarCampos();
             } else {
-                JOptionPane.showMessageDialog(vista, "Por favor, ingrese al menos el nombre y el teléfono.");
+                JOptionPane.showMessageDialog(vista, vista.bundle.getString("msg.error.campos"));
             }
         });
 
-        // funcion para el boton eliminar
         vista.btn_eliminar.addActionListener(e -> {
             int filaSeleccionada = vista.tablaContactos.getSelectedRow();
             if (filaSeleccionada != -1) {
                 int filaModelo = vista.tablaContactos.convertRowIndexToModel(filaSeleccionada);
                 vista.modeloTabla.removeRow(filaModelo);
             } else {
-                JOptionPane.showMessageDialog(vista, "Seleccione un contacto de la tabla para eliminar.");
+                JOptionPane.showMessageDialog(vista, vista.bundle.getString("msg.error.eliminar"));
             }
         });
+
         vista.txt_buscar.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
                 String textoBusqueda = vista.txt_buscar.getText();
-                TableRowSorter<DefaultTableModel> sorter = (TableRowSorter<DefaultTableModel>) vista.tablaContactos.getRowSorter();
+                TableRowSorter<DefaultTableModel> sorter = (TableRowSorter<DefaultTableModel>) vista.tablaContactos
+                        .getRowSorter();
                 if (textoBusqueda.trim().length() == 0) {
                     sorter.setRowFilter(null);
                 } else {
@@ -85,29 +94,27 @@ public class logica_ventana {
         });
     }
 
-    // funcion para la barra de carga y guardar el archivo
     private void ejecutarExportacion() {
         new Thread(() -> {
             vista.progressBar.setValue(0);
             try {
                 for (int i = 0; i <= 100; i += 20) {
                     vista.progressBar.setValue(i);
-                    Thread.sleep(150); 
+                    Thread.sleep(150);
                 }
-                
+
                 modeloDAO.exportarContactosCSV(vista.modeloTabla, "contactos_exportados.csv");
-                
+
                 vista.progressBar.setValue(100);
-                JOptionPane.showMessageDialog(vista, "Exportación completada con éxito.");
-                vista.progressBar.setValue(0); 
-                
+                JOptionPane.showMessageDialog(vista, vista.bundle.getString("msg.exito.exportar"));
+                vista.progressBar.setValue(0);
+
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
         }).start();
     }
 
-    // funcion para vaciar los textos
     private void limpiarCampos() {
         vista.txt_nombres.setText("");
         vista.txt_telefono.setText("");

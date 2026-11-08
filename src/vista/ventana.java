@@ -1,190 +1,203 @@
 package vista;
 
-import java.awt.EventQueue;
-import java.awt.Font;
-import java.awt.BorderLayout;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import java.awt.*;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JButton;
-
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
-import javax.swing.JProgressBar;
-import javax.swing.JPopupMenu;
-import javax.swing.JMenuItem;
-
 import controlador.logica_ventana;
 
 public class ventana extends JFrame {
 
     public JPanel contentPane;
-    public JTextField txt_nombres;
-    public JTextField txt_telefono;
-    public JTextField txt_email;
-    public JTextField txt_buscar;
+    public JTextField txt_nombres, txt_telefono, txt_email, txt_buscar;
     public JCheckBox chb_favorito;
-    public JComboBox cmb_categoria;
-    public JButton btn_add;
-    public JButton btn_modificar;
-    public JButton btn_eliminar;
-    
-    public JTabbedPane tabbedPane; 
-    public JTable tablaContactos; 
-    public DefaultTableModel modeloTabla; 
-    public JProgressBar progressBar; 
-    public JPopupMenu menuContextual; 
-    public JMenuItem itemExportar; 
+    public JComboBox<String> cmb_categoria, cmb_idioma;
+    public JButton btn_add, btn_modificar, btn_eliminar;
 
-    /**
-     * Launch the application.
-     */
+    public JTabbedPane tabbedPane;
+    public JTable tablaContactos;
+    public DefaultTableModel modeloTabla;
+    public JProgressBar progressBar;
+    public JPopupMenu menuContextual;
+    public JMenuItem itemExportar;
+
+    public JLabel lbl_nombres, lbl_telefono, lbl_email, lbl_buscar, lbl_idioma, lblEstadisticas;
+    public ResourceBundle bundle;
+
+    // Paneles de la interfaz
+    public JPanel pnlNorte, pnlFormulario, pnlBotones, pnlIdioma, pnlSur, pnlBusqueda;
+
     public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    ventana frame = new ventana();
-                    frame.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        EventQueue.invokeLater(() -> {
+            try {
+                ventana frame = new ventana();
+                frame.setVisible(true);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }
 
-    /**
-     * Create the frame.
-     */
     public ventana() {
-        setTitle("GESTION DE CONTACTOS");
+        cargarIdioma("es", "ES");
+
+        setTitle("GESTIÓN DE CONTACTOS");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setResizable(false);
-        setBounds(100, 100, 1026, 760); 
-        contentPane = new JPanel();
-        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        setBounds(100, 100, 1050, 760);
 
+        contentPane = new JPanel(new BorderLayout(10, 10));
+        contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
         setContentPane(contentPane);
-        contentPane.setLayout(null); 
-        
-        JLabel lbl_etiqueta1 = new JLabel("NOMBRES:");
-        lbl_etiqueta1.setBounds(25, 41, 89, 13);
-        lbl_etiqueta1.setFont(new Font("Tahoma", Font.BOLD, 15));
-        contentPane.add(lbl_etiqueta1);
-        
-        JLabel lbl_etiqueta2 = new JLabel("TELEFONO:");
-        lbl_etiqueta2.setBounds(25, 80, 89, 13);
-        lbl_etiqueta2.setFont(new Font("Tahoma", Font.BOLD, 15));
-        contentPane.add(lbl_etiqueta2);
-        
-        JLabel lbl_etiqueta3 = new JLabel("EMAIL:");
-        lbl_etiqueta3.setBounds(25, 122, 89, 13);
-        lbl_etiqueta3.setFont(new Font("Tahoma", Font.BOLD, 15));
-        contentPane.add(lbl_etiqueta3);
-        
-        JLabel lbl_etiqueta4 = new JLabel("BUSCAR POR NOMBRE:");
-        lbl_etiqueta4.setFont(new Font("Tahoma", Font.BOLD, 15));
-        lbl_etiqueta4.setBounds(25, 661, 192, 13);
-        contentPane.add(lbl_etiqueta4);
-        
-        txt_nombres = new JTextField();
-        txt_nombres.setBounds(124, 28, 427, 31);
-        txt_nombres.setFont(new Font("Tahoma", Font.PLAIN, 15));
-        contentPane.add(txt_nombres);
-        txt_nombres.setColumns(10);
-        
-        txt_telefono = new JTextField();
-        txt_telefono.setBounds(124, 69, 427, 31);
-        txt_telefono.setFont(new Font("Tahoma", Font.PLAIN, 15));
-        txt_telefono.setColumns(10);
-        contentPane.add(txt_telefono);
-        
-        txt_email = new JTextField();
-        txt_email.setBounds(124, 110, 427, 31);
-        txt_email.setFont(new Font("Tahoma", Font.PLAIN, 15));
-        txt_email.setColumns(10);
-        contentPane.add(txt_email);
-        
-        txt_buscar = new JTextField();
-        txt_buscar.setFont(new Font("Tahoma", Font.PLAIN, 15));
-        txt_buscar.setColumns(10);
-        txt_buscar.setBounds(212, 650, 784, 31);
-        contentPane.add(txt_buscar);
-        
-        chb_favorito = new JCheckBox("CONTACTO FAVORITO");
-        chb_favorito.setBounds(24, 170, 193, 21);
-        chb_favorito.setFont(new Font("Tahoma", Font.PLAIN, 15));
-        contentPane.add(chb_favorito);
-        
-        cmb_categoria = new JComboBox();
-        cmb_categoria.setBounds(300, 167, 251, 31);
-        contentPane.add(cmb_categoria);
 
-        String[] categorias = {"Elija una Categoria", "Familia", "Amigos", "Trabajo"};
-        for (String categoria : categorias) {
-            cmb_categoria.addItem(categoria);
-        }
+        pnlNorte = new JPanel(new BorderLayout(10, 10));
+        pnlFormulario = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 5, 5, 5);
 
-        btn_add = new JButton("AGREGAR");
-        btn_add.setFont(new Font("Tahoma", Font.PLAIN, 15));
-        btn_add.setBounds(601, 70, 125, 65);
-        contentPane.add(btn_add);
-        
-        btn_modificar = new JButton("MODIFICAR");
-        btn_modificar.setFont(new Font("Tahoma", Font.PLAIN, 15));
-        btn_modificar.setBounds(736, 70, 125, 65);
-        contentPane.add(btn_modificar);
-        
-        btn_eliminar = new JButton("ELIMINAR");
-        btn_eliminar.setFont(new Font("Tahoma", Font.PLAIN, 15));
-        btn_eliminar.setBounds(871, 69, 125, 65);
-        contentPane.add(btn_eliminar);
+        lbl_nombres = new JLabel();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        pnlFormulario.add(lbl_nombres, gbc);
+
+        txt_nombres = new JTextField(20);
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        pnlFormulario.add(txt_nombres, gbc);
+
+        lbl_telefono = new JLabel();
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        pnlFormulario.add(lbl_telefono, gbc);
+
+        txt_telefono = new JTextField(20);
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        pnlFormulario.add(txt_telefono, gbc);
+
+        lbl_email = new JLabel();
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        pnlFormulario.add(lbl_email, gbc);
+
+        txt_email = new JTextField(20);
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        pnlFormulario.add(txt_email, gbc);
+
+        chb_favorito = new JCheckBox();
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        pnlFormulario.add(chb_favorito, gbc);
+
+        cmb_categoria = new JComboBox<>();
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        pnlFormulario.add(cmb_categoria, gbc);
+
+        pnlBotones = new JPanel(new GridLayout(3, 1, 5, 10));
+        btn_add = new JButton();
+        btn_modificar = new JButton();
+        btn_eliminar = new JButton();
+        pnlBotones.add(btn_add);
+        pnlBotones.add(btn_modificar);
+        pnlBotones.add(btn_eliminar);
+
+        pnlIdioma = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        lbl_idioma = new JLabel();
+        cmb_idioma = new JComboBox<>(new String[] { "Español", "English", "Français" });
+        pnlIdioma.add(lbl_idioma);
+        pnlIdioma.add(cmb_idioma);
+
+        pnlNorte.add(pnlIdioma, BorderLayout.NORTH);
+        pnlNorte.add(pnlFormulario, BorderLayout.CENTER);
+        pnlNorte.add(pnlBotones, BorderLayout.EAST);
+        contentPane.add(pnlNorte, BorderLayout.NORTH);
 
         tabbedPane = new JTabbedPane();
-        tabbedPane.setBounds(25, 242, 971, 398); 
-        
-        JPanel panelContactos = new JPanel(new BorderLayout()); 
-        
-        modeloTabla = new DefaultTableModel(new Object[]{"Nombres", "Teléfono", "Email", "Favorito", "Categoría"}, 0);
+        JPanel panelContactos = new JPanel(new BorderLayout());
+        modeloTabla = new DefaultTableModel(new Object[] { "", "", "", "", "" }, 0);
         tablaContactos = new JTable(modeloTabla);
-        tablaContactos.setFont(new Font("Tahoma", Font.PLAIN, 14));
         tablaContactos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        
+        tablaContactos.setRowHeight(25);
         TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modeloTabla);
         tablaContactos.setRowSorter(sorter);
-        
-        JScrollPane scrollTabla = new JScrollPane(tablaContactos);
-        panelContactos.add(scrollTabla, BorderLayout.CENTER);
-        
-        JPanel panelEstadisticas = new JPanel(null);
-        JLabel lblEstadisticas = new JLabel("Visualización de estadísticas (En desarrollo)");
-        lblEstadisticas.setBounds(20, 20, 400, 30);
-        lblEstadisticas.setFont(new Font("Tahoma", Font.BOLD, 14));
-        panelEstadisticas.add(lblEstadisticas);
-        
-        tabbedPane.addTab("Contactos", panelContactos);
-        tabbedPane.addTab("Estadísticas", panelEstadisticas);
-        
-        contentPane.add(tabbedPane);
+        panelContactos.add(new JScrollPane(tablaContactos), BorderLayout.CENTER);
+
+        JPanel panelEstadisticas = new JPanel(new BorderLayout());
+        lblEstadisticas = new JLabel("", SwingConstants.CENTER);
+        panelEstadisticas.add(lblEstadisticas, BorderLayout.CENTER);
+
+        tabbedPane.addTab("", panelContactos);
+        tabbedPane.addTab("", panelEstadisticas);
+        contentPane.add(tabbedPane, BorderLayout.CENTER);
+
+        pnlSur = new JPanel(new BorderLayout(5, 5));
+        pnlBusqueda = new JPanel(new BorderLayout(5, 5));
+        lbl_buscar = new JLabel();
+        txt_buscar = new JTextField();
+        pnlBusqueda.add(lbl_buscar, BorderLayout.WEST);
+        pnlBusqueda.add(txt_buscar, BorderLayout.CENTER);
 
         progressBar = new JProgressBar(0, 100);
-        progressBar.setBounds(25, 695, 971, 20); 
         progressBar.setStringPainted(true);
-        progressBar.setValue(0); 
-        contentPane.add(progressBar);
+
+        pnlSur.add(pnlBusqueda, BorderLayout.NORTH);
+        pnlSur.add(progressBar, BorderLayout.SOUTH);
+        contentPane.add(pnlSur, BorderLayout.SOUTH);
 
         menuContextual = new JPopupMenu();
-        itemExportar = new JMenuItem("Exportar datos a CSV");
+        itemExportar = new JMenuItem();
         menuContextual.add(itemExportar);
-        
-        logica_ventana lv = new logica_ventana(this);
+
+        // Llamada modular a la inyección de estilos visuales
+        GestorEstilos.aplicarTema(this);
+        actualizarTextosInterfaz();
+
+        new logica_ventana(this);
+    }
+
+    public void cargarIdioma(String idioma, String pais) {
+        Locale locale = new Locale(idioma, pais);
+        bundle = ResourceBundle.getBundle("idiomas.mensajes", locale);
+    }
+
+    public void actualizarTextosInterfaz() {
+        lbl_nombres.setText(bundle.getString("lbl.nombres"));
+        lbl_telefono.setText(bundle.getString("lbl.telefono"));
+        lbl_email.setText(bundle.getString("lbl.email"));
+        chb_favorito.setText(bundle.getString("chb.favorito"));
+        btn_add.setText(bundle.getString("btn.agregar"));
+        btn_modificar.setText(bundle.getString("btn.modificar"));
+        btn_eliminar.setText(bundle.getString("btn.eliminar"));
+
+        lbl_idioma.setText(bundle.getString("lbl.idioma"));
+        lbl_buscar.setText(bundle.getString("lbl.buscar"));
+        itemExportar.setText(bundle.getString("menu.exportar"));
+        lblEstadisticas.setText(bundle.getString("lbl.estadisticas"));
+
+        tabbedPane.setTitleAt(0, bundle.getString("tab.contactos"));
+        tabbedPane.setTitleAt(1, bundle.getString("tab.estadisticas"));
+
+        String[] columnas = {
+                bundle.getString("tabla.nombres"),
+                bundle.getString("tabla.telefono"),
+                bundle.getString("tabla.email"),
+                bundle.getString("tabla.favorito"),
+                bundle.getString("tabla.categoria")
+        };
+        modeloTabla.setColumnIdentifiers(columnas);
+
+        int idx = cmb_categoria.getSelectedIndex();
+        cmb_categoria.removeAllItems();
+        cmb_categoria.addItem(bundle.getString("cat.elija"));
+        cmb_categoria.addItem(bundle.getString("cat.familia"));
+        cmb_categoria.addItem(bundle.getString("cat.amigos"));
+        cmb_categoria.addItem(bundle.getString("cat.trabajo"));
+        if (idx >= 0)
+            cmb_categoria.setSelectedIndex(idx);
     }
 }
